@@ -1,4 +1,4 @@
-import { Logger, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { SuitModule } from './suit/suit.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BookingModule } from './booking/booking.module';
@@ -7,8 +7,7 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 
 const { DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME } = process.env;
-Logger.log(`${DB_USER} ${DB_PASSWORD} ${DB_HOST} ${DB_PORT} ${DB_NAME}`);
-Logger.log(JSON.stringify(process.env));
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -19,6 +18,7 @@ Logger.log(JSON.stringify(process.env));
       host: DB_HOST,
       port: +DB_PORT,
       database: DB_NAME,
+      entities: [__dirname + '/**/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
     SuitModule,
