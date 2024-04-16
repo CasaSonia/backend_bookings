@@ -109,7 +109,7 @@ export class BookingService {
     if (!suitFound) {
       throw new HttpException('Suit Not Found', HttpStatus.NOT_FOUND);
     }
-    return this.bookingRepository.find({
+    const bookings = await this.bookingRepository.find({
       where: {
         suit: suitFound,
         booking_state: In(['ACTIVED', 'INPROGRESS', 'COMPLETED']),
@@ -118,6 +118,10 @@ export class BookingService {
         suit: true,
       },
     });
+    Logger.log(bookings);
+    Logger.log(bookings[0]?.booking_date.getDate());
+
+    return bookings;
   }
   async cancelBookings(id: string) {
     const bookingFound = await this.bookingRepository.findOne({
