@@ -4,6 +4,7 @@ import { Suit } from '../entity/suit.entity';
 import { Repository } from 'typeorm';
 import { CreateSuitDto } from '../dto/create-suit.dto';
 import { UpdateSuitDto } from '../dto/update-suit.dto';
+import { SuitState } from 'src/utils/suit_utils';
 
 @Injectable()
 export class SuitService {
@@ -11,7 +12,11 @@ export class SuitService {
     @InjectRepository(Suit) private suitRepository: Repository<Suit>,
   ) {}
   getSuits() {
-    return this.suitRepository.find({});
+    return this.suitRepository.find({
+      relations: {
+        bookings: true,
+      },
+    });
   }
 
   async createSuit(suit: CreateSuitDto) {
@@ -52,6 +57,38 @@ export class SuitService {
       return await this.suitRepository.save(suitFound);
     } catch (e) {
       return new HttpException('Error updating suit', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getSuitToLoundry() {
+    const suitsToLoundry = await this.suitRepository.find({
+      where: { state: SuitState.ENLOCALSUCIO },
+    });
+    if (suitsToLoundry.length > 0) {
+      return suitsToLoundry;
+    } else {
+      return [];
+    }
+  }
+
+  async getSuitToTakeLoundry() {
+    const suitsToTakeLoundry = await this.suitRepository.find({
+      where: { state: SuitState.LAVANDERIALIMPIO },
+    });
+    if (suitsToTakeLoundry.length > 0) {
+      return suitsToTakeLoundry;
+    } else {
+      return [];
+    }
+  }
+  async getSuitsInLoundry() {
+    const suitsInLoundry = await this.suitRepository.find({
+      where: { state: SuitState.LAVANDERIASUCIO },
+    });
+    if (suitsInLoundry.length > 0) {
+      return suitsInLoundry;
+    } else {
+      return [];
     }
   }
 }

@@ -1,16 +1,18 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, LessThan, MoreThanOrEqual, Repository } from 'typeorm';
+import { DataSource, In, LessThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { Booking } from '../entity/booking.entity';
 import { CreateBookingDto } from '../dto/create-booking.dto';
 import { Suit } from 'src/suit/entity/suit.entity';
 import { UpdateBookingDto } from '../dto/update-booking.dto';
 import { addDays, differenceInHours, getDay, startOfDay } from 'date-fns';
+import { SuitState } from 'src/utils/suit_utils';
 @Injectable()
 export class BookingService {
   constructor(
     @InjectRepository(Suit) private suitRepository: Repository<Suit>,
     @InjectRepository(Booking) private bookingRepository: Repository<Booking>,
+    private dataSource: DataSource,
   ) {}
 
   async createBooking(booking: CreateBookingDto) {
@@ -330,6 +332,35 @@ export class BookingService {
     if (hsDiff >= 72) {
       return true;
     } else return false;
+  }
+
+  async updateBookingAndSuit(
+    booking_id: number,
+    booking_state: 'ACTIVED' | 'CANCELED' | 'COMPLETED' | 'INPROGRESS',
+    suit_state: SuitState,
+    booking_return_suit: Date,
+    booking_retired_suit: Date,
+  ) {
+    return await this.dataSource.transaction(async (manager) => {
+      const booking = await manager.getRepository(Booking).findOne({
+        where: {
+          id: booking_id,
+        },
+        relations: ['suit'],
+      });
+
+      const suit = await manager.getRepository(Suit).findOne({
+        where: {
+          id: booking.suit.id,
+        },
+      });
+      booking.booking_state = booking_state;
+      booking.booking_return_suit = booking_return_suit;
+      booking.booking_retired_suit = booking_retired_suit;
+      suit.state = suit_state;
+      await manager.save(booking);
+      await manager.save(suit);
+    });
   }
 }
 function getDatesInRangeDressmaker(firstDay, endDate) {

@@ -6,10 +6,13 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateBookingDto } from '../dto/create-booking.dto';
 import { BookingService } from '../service/booking.service';
 import { UpdateBookingDto } from '../dto/update-booking.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { SuitState } from 'src/utils/suit_utils';
 
 @Controller('booking')
 export class BookingController {
@@ -41,5 +44,24 @@ export class BookingController {
   @Get('suit/:id/fechas')
   getDatesBySuit(@Param('id') id: string) {
     return this.bookingService.getBusyDatesBySuit(id);
+  }
+  @Patch('/:id/estados')
+  updateBokingAndSuit(
+    @Param('id') booking_id: string,
+    @Body()
+    states: {
+      booking_state: 'ACTIVED' | 'CANCELED' | 'COMPLETED' | 'INPROGRESS';
+      suit_state: SuitState;
+      booking_return_suit?: Date;
+      booking_retired_suit?: Date;
+    },
+  ) {
+    return this.bookingService.updateBookingAndSuit(
+      +booking_id,
+      states.booking_state,
+      states.suit_state,
+      states.booking_return_suit,
+      states.booking_retired_suit,
+    );
   }
 }
