@@ -36,8 +36,8 @@ export class BookingService {
         Number(year),
         Number(month) - 1,
         Number(day),
+        -3,
       );
-      Logger.log('New Booking', newBooking.booking_date);
     } else {
       throw new HttpException('Wrong Date', HttpStatus.BAD_REQUEST);
     }
