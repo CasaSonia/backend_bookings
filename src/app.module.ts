@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 
 const { DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME } = process.env;
 Logger.log(`${DB_USER} ${DB_PASSWORD} ${DB_HOST} ${DB_PORT} ${DB_NAME}`);
+Logger.log(JSON.stringify(process.env));
 @Module({
   imports: [
     ConfigModule.forRoot(),
