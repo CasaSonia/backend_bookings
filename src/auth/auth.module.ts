@@ -3,7 +3,8 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
-import { secret } from './constant';
+
+const { secret } = process.env;
 
 @Module({
   imports: [
