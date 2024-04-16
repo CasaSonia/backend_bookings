@@ -1,11 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, In, LessThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { Booking } from '../entity/booking.entity';
 import { CreateBookingDto } from '../dto/create-booking.dto';
 import { Suit } from 'src/suit/entity/suit.entity';
 import { UpdateBookingDto } from '../dto/update-booking.dto';
-import { addDays, differenceInHours, getDay, startOfDay } from 'date-fns';
+import { addDays, differenceInHours, getDay } from 'date-fns';
 import { SuitState } from 'src/utils/suit_utils';
 @Injectable()
 export class BookingService {
@@ -29,12 +29,15 @@ export class BookingService {
       /^(\d{4})-(\d{2})-(\d{2})T?/,
     );
     if (match) {
+      Logger.log('Match', match);
+
       const [, year, month, day] = match;
       newBooking.booking_date = new Date(
         Number(year),
         Number(month) - 1,
         Number(day),
       );
+      Logger.log('New Booking', newBooking.booking_date);
     } else {
       throw new HttpException('Wrong Date', HttpStatus.BAD_REQUEST);
     }
