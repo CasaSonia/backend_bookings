@@ -42,7 +42,11 @@ export class SuitService {
     if (!suitFound) {
       return new HttpException('Suit not found', HttpStatus.NOT_FOUND);
     }
-    this.suitRepository.remove(suitFound);
+
+    const res = await this.suitRepository.remove(suitFound);
+    if (!res) {
+      return new HttpException('Error deleting suit', HttpStatus.BAD_REQUEST);
+    }
     return {
       message: 'Suit Deleted successfully',
     };

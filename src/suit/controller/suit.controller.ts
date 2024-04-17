@@ -17,7 +17,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class SuitController {
   constructor(private suitService: SuitService) {}
   @Get()
-  getSuits(@Req() request) {
+  getSuits() {
     return this.suitService.getSuits();
   }
   @Get('loundry')
