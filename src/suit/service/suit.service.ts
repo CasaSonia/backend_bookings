@@ -23,7 +23,7 @@ export class SuitService {
       where: { id: suit.id },
     });
     if (suitFound)
-      return new HttpException('Suit already exists', HttpStatus.CONFLICT);
+      throw new HttpException('Suit already exists', HttpStatus.CONFLICT);
     const newSuit = this.suitRepository.create(suit);
     return this.suitRepository.save(newSuit);
   }
@@ -31,7 +31,7 @@ export class SuitService {
   async getSuit(id: string) {
     const suitFound = await this.suitRepository.findOne({ where: { id } });
     if (!suitFound) {
-      return new HttpException('Suit not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Suit not found', HttpStatus.NOT_FOUND);
     }
     return suitFound;
   }
@@ -69,13 +69,13 @@ export class SuitService {
   async updateSuit(id: string, suit: UpdateSuitDto) {
     const suitFound = await this.suitRepository.findOne({ where: { id } });
     if (!suitFound) {
-      return new HttpException('Suit not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Suit not found', HttpStatus.NOT_FOUND);
     }
     Object.assign(suitFound, suit);
     try {
       return await this.suitRepository.save(suitFound);
     } catch (e) {
-      return new HttpException('Error updating suit', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Error updating suit', HttpStatus.BAD_REQUEST);
     }
   }
 

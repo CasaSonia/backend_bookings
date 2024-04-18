@@ -21,7 +21,7 @@ export class BookingService {
       where: { id: booking.suit.id },
     });
     if (!suitFound) {
-      return new HttpException('Suit Not Found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Suit Not Found', HttpStatus.NOT_FOUND);
     }
     const newBooking = this.bookingRepository.create(booking);
 
@@ -43,7 +43,7 @@ export class BookingService {
     }
 
     /* if (newBooking.booking_date < startOfDay(new Date())) {
-      return new HttpException('Date Not Valid', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Date Not Valid', HttpStatus.BAD_REQUEST);
     } */
     this.calculateStartDate(newBooking);
     this.calculateEndDate(newBooking);
@@ -67,7 +67,7 @@ export class BookingService {
       where: { id: Number(id) },
     });
     if (!bookingFound) {
-      return new HttpException('Booking Not Found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Booking Not Found', HttpStatus.NOT_FOUND);
     }
 
     if (booking.suit) {
@@ -75,7 +75,7 @@ export class BookingService {
         where: { id: booking.suit.id },
       });
       if (!suitFound) {
-        return new HttpException('Suit Not Found', HttpStatus.NOT_FOUND);
+        throw new HttpException('Suit Not Found', HttpStatus.NOT_FOUND);
       }
       booking.suit = suitFound;
     }
@@ -83,10 +83,7 @@ export class BookingService {
     try {
       return await this.bookingRepository.save(bookingFound);
     } catch (e) {
-      return new HttpException(
-        'Error updating booking',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('Error updating booking', HttpStatus.BAD_REQUEST);
     }
   }
   async deleteBooking(id: string) {
@@ -139,7 +136,7 @@ export class BookingService {
       where: { id },
     });
     if (!suitFound) {
-      return new HttpException('Suit Not Found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Suit Not Found', HttpStatus.NOT_FOUND);
     }
     const today = new Date();
     today.setHours(0, 0, 0, 0);
