@@ -42,7 +42,7 @@ export class SuitService {
       relations: ['bookings'],
     });
     if (!suitFound) {
-      return new HttpException('Suit not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Suit not found', HttpStatus.NOT_FOUND);
     }
     const active_bookings = suitFound.bookings.filter(
       (booking) =>
@@ -50,14 +50,17 @@ export class SuitService {
         booking.booking_state === 'INPROGRESS',
     );
     if (active_bookings.length > 0) {
-      return new HttpException(
+      throw new HttpException(
         'Suit has active bookings',
         HttpStatus.BAD_REQUEST,
       );
     }
     const res = await this.suitRepository.remove(suitFound);
     if (!res) {
-      return new HttpException('Error deleting suit', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Error deleting suit',
+        HttpStatus.SERVICE_UNAVAILABLE,
+      );
     }
     return {
       message: 'Suit Deleted successfully',
