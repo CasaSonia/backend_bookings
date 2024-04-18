@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import { CreateSuitDto } from '../dto/create-suit.dto';
 import { UpdateSuitDto } from '../dto/update-suit.dto';
 import { SuitState } from 'src/utils/suit_utils';
-
 @Injectable()
 export class SuitService {
   constructor(
@@ -38,11 +37,22 @@ export class SuitService {
   }
 
   async deleteSuit(id: string) {
-    const suitFound = await this.suitRepository.findOne({ where: { id } });
+    const suitFound = await this.suitRepository.findOne({
+      where: { id },
+      relations: ['bookings'],
+    });
     if (!suitFound) {
       return new HttpException('Suit not found', HttpStatus.NOT_FOUND);
     }
-
+    const active_bookings = suitFound.bookings.filter(
+      (booking) => booking.booking_state === 'ACTIVED',
+    );
+    if (active_bookings.length > 0) {
+      return new HttpException(
+        'Suit has active bookings',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const res = await this.suitRepository.remove(suitFound);
     if (!res) {
       return new HttpException('Error deleting suit', HttpStatus.BAD_REQUEST);

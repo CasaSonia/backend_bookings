@@ -13,7 +13,7 @@ export class Suit {
   state: SuitState;
   @Column({ nullable: true })
   image: string;
-  @OneToMany(() => Booking, (booking) => booking.suit)
+  @OneToMany(() => Booking, (booking) => booking.suit, { onDelete: 'CASCADE' })
   bookings: Booking[];
   @Column()
   color: string;
