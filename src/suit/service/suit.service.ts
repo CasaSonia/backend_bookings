@@ -45,7 +45,9 @@ export class SuitService {
       return new HttpException('Suit not found', HttpStatus.NOT_FOUND);
     }
     const active_bookings = suitFound.bookings.filter(
-      (booking) => booking.booking_state === 'ACTIVED',
+      (booking) =>
+        booking.booking_state === 'ACTIVED' ||
+        booking.booking_state === 'INPROGRESS',
     );
     if (active_bookings.length > 0) {
       return new HttpException(
